@@ -1,28 +1,39 @@
 import { useState,useEffect } from 'react';
-import {useDispatch,useSelector} from 'react-redux';
+import {connect, useDispatch,useSelector} from 'react-redux';
 import './App.css';
-import { decrementCount, incrementCount } from './store';
-
-function App() {
-  const dispatch = useDispatch();
-  const count = useSelector(state=>state.count);
-  const increment = ()=>{
-      dispatch(incrementCount(1)); /// Redux Thunk Way
-  }
-  const decrement = ()=>{
-    decrementCount(dispatch); /// Pure function way
-  }
+import { decrementCount, incrementCount, toggleLight } from './store/actions';
+  
+function App(props) {
+  const {count,incrementCount,decrementCount,lightBulb:{on},toggleLight}  = props;
+  console.log({on})
   return (
     <>
         <div>Counter: {count} </div>
-        <button onClick={increment}>
+        <div>ON : {String(on)}</div>
+        <button onClick={incrementCount}>
           Increment
         </button>
-        <button onClick={decrement}>
+        <button onClick={decrementCount}>
           Decrement
+        </button>
+        <button onClick={toggleLight}>
+          toggle Light
         </button>
     </>
   );
 }
+const mapStateToProps = (state)=>{
+  return {
+    count:state.count.count,
+    lightBulb:state.lightBulb
+  }
+};
+const mapDispatchToProps = (dispatch)=>{
+  return {
+    incrementCount:  ()=>dispatch(incrementCount(1)),
+    decrementCount : ()=> decrementCount(dispatch),
+    toggleLight : ()=> dispatch(toggleLight())
+  }
+}
 
-export default App;
+export default connect(mapStateToProps,mapDispatchToProps)(App);
